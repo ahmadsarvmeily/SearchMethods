@@ -6,10 +6,8 @@ int main()
 {
 	BlockGrid grid(4, 4, { {3,0},{3,1},{3,2} }, { {1,1},{2,1},{3,1} }, {3,3});
 
-	grid.PrintState();
-
 	while (true) {
-
+		grid.PrintState();
 		std::vector<Move> moves = grid.GetMoves();
 
 		std::cout << "Available moves:" << std::endl;
@@ -43,7 +41,7 @@ int main()
 			grid.MoveAgent(Move::Down);
 			break;
 		}
-		grid.PrintState();
+
 		if (grid.IsInGoalState()) {
 			std::cout << "congrats" << std::endl;
 			break;
