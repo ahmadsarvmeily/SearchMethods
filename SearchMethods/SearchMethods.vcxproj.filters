@@ -29,5 +29,8 @@
     <ClInclude Include="BlockGrid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BlockGridTester.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
