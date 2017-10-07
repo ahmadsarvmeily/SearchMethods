@@ -146,7 +146,11 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BlockGrid.cpp" />
     <ClCompile Include="SearchMethods.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BlockGrid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
