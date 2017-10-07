@@ -71,5 +71,5 @@ private:
 	std::vector<BlockPos> currentTilePositions;
 	const std::vector<BlockPos> goalTilePositions;
 	std::vector<Node> nodes;
-	Node* agentNode;
+	Node* agentNode = nullptr;
 };
