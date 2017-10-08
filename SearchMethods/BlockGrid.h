@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <memory>
 
 class BlockPos {
 public:
@@ -50,10 +51,10 @@ private:
 	public:
 		BlockPos position;
 		BlockContents contents = BlockContents::Empty;
-		Node* left = nullptr;
-		Node* right = nullptr;
-		Node* up = nullptr;
-		Node* down = nullptr;
+		std::unique_ptr<Node> left = nullptr;
+		std::unique_ptr<Node> right = nullptr;
+		std::unique_ptr<Node> up = nullptr;
+		std::unique_ptr<Node> down = nullptr;
 	};
 
 	Node& GetNode(BlockPos& pos) {
@@ -71,5 +72,5 @@ private:
 	std::vector<BlockPos> currentTilePositions;
 	const std::vector<BlockPos> goalTilePositions;
 	std::vector<Node> nodes;
-	Node* agentNode = nullptr;
+	std::unique_ptr<Node> agentNode = nullptr;
 };
