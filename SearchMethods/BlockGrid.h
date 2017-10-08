@@ -39,6 +39,21 @@ public:
 		std::initializer_list<BlockPos> goalTilePositions,
 		BlockPos initialAgentPos);
 
+	BlockGrid(const BlockGrid& src) :
+		gridWidth(src.gridWidth),
+		gridHeight(src.gridHeight),
+		currentTilePositions(src.currentTilePositions),
+		goalTilePositions(src.goalTilePositions),
+		nodes(src.nodes),
+		agentNode(&(GetNode(src.agentNode->position)))
+	{
+		InitNodes();
+	}
+	BlockGrid& operator=(const BlockGrid& src) {
+		return (*this = BlockGrid(src));
+	}
+	~BlockGrid() = default;
+
 	bool IsInGoalState() const;
 	void PrintState() const;
 	void MoveAgent(Move move);
@@ -48,6 +63,16 @@ private:
 	class Node {
 
 	public:
+		Node() = default;
+		Node(const Node& src) :
+			position(src.position),
+			contents(src.contents)
+		{}
+		Node& operator=(const Node& src) {
+			return (*this = Node(src));
+		}
+		~Node() = default;
+
 		BlockPos position;
 		BlockContents contents = BlockContents::Empty;
 		Node* left = nullptr;
