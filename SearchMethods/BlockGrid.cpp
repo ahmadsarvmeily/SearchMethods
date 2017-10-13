@@ -4,8 +4,9 @@
 #include <initializer_list>
 #include <cmath>
 #include <cassert>
+#include <algorithm>
 
-BlockGrid::BlockGrid(int gridWidth, int gridHeight, 
+BlockGrid::BlockGrid(unsigned char gridWidth, unsigned char gridHeight,
 	std::initializer_list<BlockPos> initialTilePositions,
 	std::initializer_list<BlockPos> goalTilePositions,
 	BlockPos initialAgentPos) :
@@ -14,7 +15,7 @@ BlockGrid::BlockGrid(int gridWidth, int gridHeight,
 	currentTilePositions(initialTilePositions),
 	goalTilePositions(goalTilePositions),
 	nodes(gridWidth*gridHeight),
-	agentNode(&(GetNode(initialAgentPos)))
+	agentPos(initialAgentPos)
 {
 	assert(currentTilePositions.size() == this->goalTilePositions.size());
 	InitNodes();
@@ -64,55 +65,61 @@ void BlockGrid::PrintState() const
 	std::cout << std::endl;
 }
 
-void BlockGrid::MoveAgent(Move move)
+BlockGrid& BlockGrid::MoveAgent(Move move)
 {
 	switch (move) {
 	case Move::Left:
-		if (agentNode->position.col > 0)
-			ProcessAgentMove(*agentNode->left);
+		if (agentPos.col > 0)
+			ProcessAgentMove(agentPos.Left());
 		break;
 	case Move::Right:
-		if (agentNode->position.col < gridWidth - 1)
-			ProcessAgentMove(*agentNode->right);
+		if (agentPos.col < gridWidth - 1)
+			ProcessAgentMove(agentPos.Right());
 		break;
 	case Move::Up:
-		if (agentNode->position.row > 0)
-			ProcessAgentMove(*agentNode->up);
+		if (agentPos.row > 0)
+			ProcessAgentMove(agentPos.Up());
 		break;
 	case Move::Down:
-		if (agentNode->position.row < gridHeight - 1)
-			ProcessAgentMove(*agentNode->down);
+		if (agentPos.row < gridHeight - 1)
+			ProcessAgentMove(agentPos.Down());
 	}
+	return *this;
 }
 
-void BlockGrid::SetContents(Node & node, BlockContents contents) {
-	node.contents = contents;
-}
-
-void BlockGrid::ProcessAgentMove(Node& moveToNode)
+void BlockGrid::ProcessAgentMove(const BlockPos moveToPos)
 {
+	Node& moveToNode = GetNode(moveToPos);
+	Node& agentNode = GetNode(agentPos);
 	if (moveToNode.contents == BlockContents::Tile) {
 		int tileIndex = GetTileIndex(moveToNode);
-		currentTilePositions[tileIndex] = agentNode->position;
+		currentTilePositions[tileIndex] = agentPos;
 	}
-	SwapContents(*agentNode, moveToNode);
-	agentNode = &moveToNode;
+	agentNode.SwapContents(moveToNode);
+	agentPos = moveToNode.position;
 }
 
 std::vector<Move> BlockGrid::GetMoves() const
 {
 	std::vector<Move> moves;
 
-	if (agentNode->left != nullptr)
-		moves.push_back(Move::Left);
-	if (agentNode->right != nullptr)
-		moves.push_back(Move::Right);
-	if (agentNode->up != nullptr)
-		moves.push_back(Move::Up);
-	if (agentNode->down != nullptr)
-		moves.push_back(Move::Down);
+	if (agentPos.col > 0)
+		moves.emplace_back(Move::Left);
+	if (agentPos.col < gridWidth - 1)
+		moves.emplace_back(Move::Right);
+	if (agentPos.row > 0)
+		moves.emplace_back(Move::Up);
+	if (agentPos.row < gridHeight - 1)
+		moves.emplace_back(Move::Down);
 
 	return moves;
+}
+
+std::vector<Move> BlockGrid::GetMovesShuffled() const
+{
+	std::vector<Move> shuffledMoves = GetMoves();
+	std::random_shuffle(shuffledMoves.begin(), shuffledMoves.end());
+	return shuffledMoves;
 }
 
 void BlockGrid::InitNodes()
@@ -123,34 +130,14 @@ void BlockGrid::InitNodes()
 		index++;
 	}
 
-	for (Node& node : nodes) {
-		int row = node.position.row;
-		int col = node.position.col;
-
-		if (col > 0) {
-			node.left = &GetNode( BlockPos(row, col - 1) );
-		}
-		if (col < gridWidth - 1) {
-			node.right = &GetNode( BlockPos(row, col + 1) );
-		}
-		if (row > 0) {
-			node.up = &GetNode( BlockPos(row - 1, col) );
-		}
-		if (row < gridHeight - 1) {
-			node.down = &GetNode( BlockPos(row + 1, col) );
-		}
-	}
-
 	for (BlockPos& pos : currentTilePositions) {
 		GetNode(pos).contents = BlockContents::Tile;
 	}
-	agentNode->contents = BlockContents::Agent;
+	GetNode(agentPos).contents = BlockContents::Agent;
 }
 
-
-
-BlockPos BlockGrid::IndexToPos(int index) const {
-	return { index / gridWidth, index % gridWidth };
+BlockPos BlockGrid::IndexToPos(unsigned char index) const {
+	return BlockPos( index / gridWidth, index % gridWidth );
 }
 
 int BlockGrid::GetTileIndex(const Node& node) const
@@ -163,12 +150,4 @@ int BlockGrid::GetTileIndex(const Node& node) const
 		tileIndex++;
 	}
 	return -1;
-}
-
-void BlockGrid::SwapContents(Node& node1, Node& node2) {
-	BlockContents block1Contents = node1.contents;
-	BlockContents block2Contents = node2.contents;
-
-	SetContents(node1, block2Contents);
-	SetContents(node2, block1Contents);
 }

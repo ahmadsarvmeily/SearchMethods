@@ -1,12 +1,26 @@
 #pragma once
 #include <vector>
+#include <string>
 
 class BlockPos {
 public:
 	BlockPos() = default;
-	BlockPos(int row, int col) :
+	BlockPos(unsigned char row, unsigned char col) :
 		row(row),
 		col(col) {}
+
+	BlockPos Left() {
+		return BlockPos(row, col - 1);
+	}
+	BlockPos Right() {
+		return BlockPos(row, col + 1);
+	}
+	BlockPos Up() {
+		return BlockPos(row - 1, col);
+	}
+	BlockPos Down() {
+		return BlockPos(row + 1, col);
+	}
 
 	bool operator==(const BlockPos& rhs) const {
 		return (row == rhs.row && col == rhs.col);
@@ -15,7 +29,7 @@ public:
 		return !(*this == rhs);
 	}
 
-	int row, col;
+	unsigned char row, col;
 };
 
 enum class BlockContents {
@@ -31,70 +45,77 @@ enum class Move {
 	Down
 };
 
+/*
+std::string MoveToStr(Move move) {
+	switch (move) {
+	case Move::Left:
+		return "Left";
+	case Move::Right:
+		return "Right";
+	case Move::Up:
+		return "Up";
+	case Move::Down:
+		return "Down";
+	}
+}
+*/
+
 class BlockGrid {
 
 public:
-	BlockGrid(int gridWidth, int gridHeight,
+	BlockGrid(unsigned char gridWidth, unsigned char gridHeight,
 		std::initializer_list<BlockPos> initialTilePositions,
 		std::initializer_list<BlockPos> goalTilePositions,
 		BlockPos initialAgentPos);
 
-	BlockGrid(const BlockGrid& src) :
-		gridWidth(src.gridWidth),
-		gridHeight(src.gridHeight),
-		currentTilePositions(src.currentTilePositions),
-		goalTilePositions(src.goalTilePositions),
-		nodes(src.nodes),
-		agentNode(&(GetNode(src.agentNode->position)))
-	{
-		InitNodes();
-	}
 	BlockGrid& operator=(const BlockGrid& src) {
-		return (*this = BlockGrid(src));
+		gridWidth = src.gridWidth;
+		gridHeight = src.gridHeight;
+		currentTilePositions = src.currentTilePositions;
+		goalTilePositions = src.goalTilePositions;
+		nodes = src.nodes;
+		agentPos = src.agentPos;
+		InitNodes();
+		return *this;
+	}
+	BlockGrid(const BlockGrid& src) {
+		*this = src;
 	}
 	~BlockGrid() = default;
 
 	bool IsInGoalState() const;
 	void PrintState() const;
-	void MoveAgent(Move move);
+	BlockGrid& MoveAgent(Move move);
 	std::vector<Move> GetMoves() const;
+	std::vector<Move> GetMovesShuffled() const;
 
 private:
 	class Node {
 
 	public:
-		Node() = default;
-		Node(const Node& src) :
-			position(src.position),
-			contents(src.contents)
-		{}
-		Node& operator=(const Node& src) {
-			return (*this = Node(src));
+		void SwapContents(Node& node) {
+			BlockContents temp = contents;
+			contents = node.contents;
+			node.contents = temp;
 		}
-		~Node() = default;
-
+		
 		BlockPos position;
 		BlockContents contents = BlockContents::Empty;
-		Node* left = nullptr;
-		Node* right = nullptr;
-		Node* up = nullptr;
-		Node* down = nullptr;
 	};
 
-	Node& GetNode(BlockPos& pos) {
+	Node& GetNode(const BlockPos& pos) {
 		return nodes[pos.col + pos.row*gridWidth];
 	};
 
 	void InitNodes();
-	void SetContents(Node& node, BlockContents contents);
-	void SwapContents(Node& node1, Node& node2);
-	void ProcessAgentMove(Node& moveToNode);
-	int GetTileIndex(const Node& node) const;
-	BlockPos IndexToPos(int index) const;
 	
-	const int gridWidth, gridHeight;
-	std::vector<BlockPos> currentTilePositions;
-	const std::vector<BlockPos> goalTilePositions;
+	void ProcessAgentMove(const BlockPos moveToPos);
+	int GetTileIndex(const Node& node) const;
+	BlockPos IndexToPos(unsigned char index) const;
+	
+	unsigned char gridWidth, gridHeight;
+	std::vector<BlockPos> currentTilePositions; 
+	std::vector<BlockPos> goalTilePositions;
 	std::vector<Node> nodes;
-	Node* agentNode = nullptr;
+	BlockPos agentPos;
 };
