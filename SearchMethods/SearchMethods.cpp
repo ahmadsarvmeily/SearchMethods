@@ -2,6 +2,7 @@
 #include <iostream>
 #include "DFS.h"
 #include "BFS.h"
+#include "IDS.h"
 #include <chrono>
 
 int main()
@@ -13,13 +14,18 @@ int main()
 	double sum = 0;
 	for (int i = 1; i < runs+1; i++) {
 		auto start = std::chrono::steady_clock::now();
-		//BFS::Search(grid);
-		DFS::Search(grid);
-		auto end = std::chrono::steady_clock::now();
-		std::chrono::duration<double, std::milli> duration = end - start;
-		double elapsed = duration.count();
-		std::cout << i << " | Time elapsed: " << elapsed << "ms" << std::endl;
-		sum += elapsed;
+
+		if (IDS::Search(grid)) {
+			auto end = std::chrono::steady_clock::now();
+			std::chrono::duration<double, std::milli> duration = end - start;
+			double elapsed = duration.count();
+			std::cout << i << " | Time elapsed: " << elapsed << "ms" << std::endl;
+			sum += elapsed;
+		}
+		else {
+			std::cout << "Error: Could not find solution" << std::endl;
+			break;
+		}
 	}
 	double avg = sum / runs;
 	std::cout << std::endl << "Average time elapsed: " << avg << "ms" << std::endl;
