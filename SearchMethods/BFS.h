@@ -5,7 +5,9 @@
 class BFS {
 
 public:
-	static void Search(const BlockGrid& root) {
+	static bool Search(const BlockGrid& root) {
+
+		if (root.IsInGoalState()) return true;
 
 		std::queue<BlockGrid> states;
 		states.emplace(root);
@@ -17,10 +19,11 @@ public:
 			for (const Move& move : currentState.GetMoves()) {
 				BlockGrid grid = currentState;
 				if (grid.MoveAgent(move).IsInGoalState()) {
-					return;
+					return true;
 				}
 				states.push(grid);
 			}
 		}
+		return false;
 	}
 };
