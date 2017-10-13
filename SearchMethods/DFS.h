@@ -5,23 +5,25 @@
 class DFS {
 
 public:
+	static bool Search(const BlockGrid& root, int limit = -1) {
 
-	static void Search(const BlockGrid& root) {
+		if (root.IsInGoalState()) return true;
 
 		std::stack<BlockGrid> states;
 		states.emplace(root);
 
-		while (!states.empty()) {
+		for (int depth = 0; !states.empty() && (depth < limit || limit == -1); depth++) {
 			BlockGrid currentState = states.top();
 			states.pop();
 
 			for (const Move& move : currentState.GetMovesShuffled()) {
 				BlockGrid grid = currentState;
 				if (grid.MoveAgent(move).IsInGoalState()) {
-					return;
+					return true;
 				}
-				states.push(grid);
+				states.push(grid);	
 			}
 		}
+		return false;
 	}
 };
