@@ -9,21 +9,37 @@ public:
 
 		if (root.IsInGoalState()) return true;
 
-		std::stack<BlockGrid> states;
-		states.emplace(root);
+		std::stack<Node> states;
+		states.push({ root,0 });
 
-		for (int depth = 0; !states.empty() && (depth < limit || limit == -1); depth++) {
-			BlockGrid currentState = states.top();
-			states.pop();
+		if (limit > 0 || limit == -1) {
+			for (int depth = 0; !states.empty(); depth++) {
+				Node currentState = states.top();
+				states.pop();
 
-			for (const Move& move : currentState.GetMovesShuffled()) {
-				BlockGrid grid = currentState;
-				if (grid.MoveAgent(move).IsInGoalState()) {
-					return true;
+				for (const Move& move : currentState.grid.GetMovesShuffled()) {
+					BlockGrid grid = currentState.grid;
+					if (grid.MoveAgent(move).IsInGoalState()) {
+						std::cout << currentState.depth + 1 << std::endl;
+						return true;
+					}
+					if (currentState.depth < limit || limit == -1)
+						states.push({ grid,currentState.depth + 1 });
 				}
-				states.push(grid);	
+
 			}
 		}
 		return false;
 	}
+
+	class Node {
+
+	public:
+		Node(BlockGrid grid, int depth) :
+			grid(grid),
+			depth(depth) {}
+
+		BlockGrid grid;
+		int depth;
+	};
 };
