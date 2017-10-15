@@ -154,6 +154,7 @@
     <ClCompile Include="SearchMethods.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AStar.h" />
     <ClInclude Include="BFS.h" />
     <ClInclude Include="BlockGrid.h" />
     <ClInclude Include="BlockGridTester.h" />
