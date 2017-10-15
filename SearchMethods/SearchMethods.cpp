@@ -3,6 +3,7 @@
 #include "DFS.h"
 #include "BFS.h"
 #include "IDS.h"
+#include "AStar.h"
 #include <chrono>
 
 int main()
@@ -15,7 +16,7 @@ int main()
 	for (int i = 1; i < runs+1; i++) {
 		auto start = std::chrono::steady_clock::now();
 
-		if (IDS::Search(grid)) {
+		if (AStar::Search(grid)) {
 			auto end = std::chrono::steady_clock::now();
 			std::chrono::duration<double, std::milli> duration = end - start;
 			double elapsed = duration.count();
