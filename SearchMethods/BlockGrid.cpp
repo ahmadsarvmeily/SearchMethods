@@ -65,24 +65,34 @@ void BlockGrid::PrintState() const
 	std::cout << std::endl;
 }
 
+int BlockGrid::ManhattanDistances() const
+{
+	int sum = 0;
+
+	for (size_t i = 0; i < goalTilePositions.size(); i++) {
+		
+		const BlockPos& current = currentTilePositions[i];
+		const BlockPos& goal = goalTilePositions[i];
+
+		sum += current.Distance(goal);
+	}
+	return sum;
+}
+
 BlockGrid& BlockGrid::MoveAgent(Move move)
 {
 	switch (move) {
 	case Move::Left:
-		if (agentPos.col > 0)
-			ProcessAgentMove(agentPos.Left());
+		ProcessAgentMove(agentPos.Left());
 		break;
 	case Move::Right:
-		if (agentPos.col < gridWidth - 1)
-			ProcessAgentMove(agentPos.Right());
+		ProcessAgentMove(agentPos.Right());
 		break;
 	case Move::Up:
-		if (agentPos.row > 0)
-			ProcessAgentMove(agentPos.Up());
+		ProcessAgentMove(agentPos.Up());
 		break;
 	case Move::Down:
-		if (agentPos.row < gridHeight - 1)
-			ProcessAgentMove(agentPos.Down());
+		ProcessAgentMove(agentPos.Down());
 	}
 	return *this;
 }

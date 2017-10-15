@@ -22,6 +22,11 @@ public:
 		return BlockPos(row + 1, col);
 	}
 
+	int Distance(const BlockPos& pos) const {
+		return std::abs(col - pos.col) +
+			std::abs(row - pos.row);
+	}
+
 	bool operator==(const BlockPos& rhs) const {
 		return (row == rhs.row && col == rhs.col);
 	}
@@ -85,6 +90,7 @@ public:
 
 	bool IsInGoalState() const;
 	void PrintState() const;
+	int ManhattanDistances() const;
 	BlockGrid& MoveAgent(Move move);
 	std::vector<Move> GetMoves() const;
 	std::vector<Move> GetMovesShuffled() const;
@@ -98,7 +104,7 @@ private:
 			contents = node.contents;
 			node.contents = temp;
 		}
-		
+
 		BlockPos position;
 		BlockContents contents = BlockContents::Empty;
 	};
