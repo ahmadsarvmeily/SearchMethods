@@ -105,7 +105,7 @@ void BlockGrid::ProcessAgentMove(const BlockPos moveToPos)
 		int tileIndex = GetTileIndex(moveToNode);
 		currentTilePositions[tileIndex] = agentPos;
 	}
-	agentNode.SwapContents(moveToNode);
+	std::swap(agentNode.contents, moveToNode.contents);
 	agentPos = moveToNode.position;
 }
 
