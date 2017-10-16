@@ -2,6 +2,7 @@
 #include "BlockGrid.h"
 #include <queue>
 #include <iostream>
+#include <vector>
 
 class AStar {
 
@@ -21,13 +22,14 @@ public:
 				std::cout << minFNode.depth << std::endl;
 				return true;
 			}
-			else {	
-				for (const Move& move : minFNode.grid.GetMoves()) {
+			else {
+				const auto& moves = minFNode.grid.GetMoves();
+				for (const Move& move : moves) {
 					Node node = fringe.top();
 					node.grid.MoveAgent(move);
 					node.depth++;
 					node.RecalculateF();
-					fringe.push(node);
+					fringe.push(std::move(node));
 				}
 				fringe.pop();
 			}
@@ -50,10 +52,6 @@ private:
 
 		void RecalculateF() {
 			f = CalculateF();
-		}
-
-		bool operator<(const Node& rhs) const {
-			return f < rhs.f;
 		}
 
 	private:
