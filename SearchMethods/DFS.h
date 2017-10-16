@@ -25,7 +25,7 @@ public:
 						return true;
 					}
 					if (node.depth < limit || limit == -1) {
-						states.push(node);
+						states.push(std::move(node));
 					}
 				}
 

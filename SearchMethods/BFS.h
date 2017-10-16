@@ -21,7 +21,7 @@ public:
 				if (grid.MoveAgent(move).IsInGoalState()) {
 					return true;
 				}
-				states.push(grid);
+				states.push(std::move(grid));
 			}
 		}
 		return false;
