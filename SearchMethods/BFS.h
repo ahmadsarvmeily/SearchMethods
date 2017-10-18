@@ -1,6 +1,6 @@
 #pragma once
 #include "BlockGrid.h"
-#include <queue>
+#include <deque>
 
 class BFS {
 
@@ -9,20 +9,20 @@ public:
 
 		if (root.IsInGoalState()) return true;
 
-		std::queue<BlockGrid> states;
-		states.emplace(root);
+		std::deque<BlockGrid> states;
+		states.push_back(root);
 
 		while (!states.empty()) {
-			BlockGrid currentState = states.front();
-			states.pop();
+			BlockGrid& currentState = states.front();
 			
 			for (const Move& move : currentState.GetMoves()) {
 				BlockGrid grid = currentState;
 				if (grid.MoveAgent(move).IsInGoalState()) {
 					return true;
 				}
-				states.push(std::move(grid));
+				states.push_back(std::move(grid));
 			}
+			states.pop_front();
 		}
 		return false;
 	}
