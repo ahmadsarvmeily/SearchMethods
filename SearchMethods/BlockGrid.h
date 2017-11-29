@@ -5,7 +5,7 @@
 class BlockPos {
 public:
 	BlockPos() = default;
-	BlockPos(unsigned char row, unsigned char col) :
+	BlockPos(int row, int col) :
 		row(row),
 		col(col) {}
 
@@ -50,25 +50,10 @@ enum class Move {
 	Down
 };
 
-/*
-std::string MoveToStr(Move move) {
-	switch (move) {
-	case Move::Left:
-		return "Left";
-	case Move::Right:
-		return "Right";
-	case Move::Up:
-		return "Up";
-	case Move::Down:
-		return "Down";
-	}
-}
-*/
-
 class BlockGrid {
 
 public:
-	BlockGrid(unsigned char gridWidth, unsigned char gridHeight,
+	BlockGrid(int gridWidth, int gridHeight,
 		std::initializer_list<BlockPos> initialTilePositions,
 		std::initializer_list<BlockPos> goalTilePositions,
 		BlockPos initialAgentPos);
@@ -90,13 +75,14 @@ private:
 
 	Node& GetNode(const BlockPos& pos) {
 		return nodes[pos.col + pos.row*gridWidth];
-	};
+	}
 
 	void InitNodes();
 	
 	void ProcessAgentMove(const BlockPos moveToPos);
 	int GetTileIndex(const Node& node) const;
-	BlockPos IndexToPos(unsigned char index) const;
+	
+	BlockPos IndexToPos(int index) const;
 	
 	unsigned char gridWidth, gridHeight;
 	std::vector<BlockPos> currentTilePositions; 

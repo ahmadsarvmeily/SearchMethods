@@ -6,7 +6,7 @@
 #include <cassert>
 #include <algorithm>
 
-BlockGrid::BlockGrid(unsigned char gridWidth, unsigned char gridHeight,
+BlockGrid::BlockGrid(int gridWidth, int gridHeight,
 	std::initializer_list<BlockPos> initialTilePositions,
 	std::initializer_list<BlockPos> goalTilePositions,
 	BlockPos initialAgentPos) :
@@ -113,14 +113,14 @@ std::vector<Move> BlockGrid::GetMoves() const
 {
 	std::vector<Move> moves;
 
-	if (agentPos.col > 0)
-		moves.emplace_back(Move::Left);
-	if (agentPos.col < gridWidth - 1)
-		moves.emplace_back(Move::Right);
-	if (agentPos.row > 0)
-		moves.emplace_back(Move::Up);
 	if (agentPos.row < gridHeight - 1)
 		moves.emplace_back(Move::Down);
+	if (agentPos.col < gridWidth - 1)
+		moves.emplace_back(Move::Right);
+	if (agentPos.col > 0)
+		moves.emplace_back(Move::Left);
+	if (agentPos.row > 0)
+		moves.emplace_back(Move::Up);
 
 	return moves;
 }
@@ -146,7 +146,7 @@ void BlockGrid::InitNodes()
 	GetNode(agentPos).contents = BlockContents::Agent;
 }
 
-BlockPos BlockGrid::IndexToPos(unsigned char index) const {
+BlockPos BlockGrid::IndexToPos(int index) const {
 	return BlockPos( index / gridWidth, index % gridWidth );
 }
 

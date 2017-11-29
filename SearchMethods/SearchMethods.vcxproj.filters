@@ -44,5 +44,8 @@
     <ClInclude Include="AStar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TreeSearch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

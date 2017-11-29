@@ -1,47 +1,42 @@
 #pragma once
 #include "BlockGrid.h"
-#include <stack>
+#include "TreeSearch.h"
+#include <memory>
 
 class DFS {
 
 public:
-	static bool Search(const BlockGrid& root, int limit = -1) {
+	static bool Search(const BlockGrid& root) {
+		return Search(root, true, -1);
+	}
 
-		if (root.IsInGoalState()) return true;
+	static bool Search(const BlockGrid& root, bool randomMoves, int limit) {
 
-		std::stack<Node> states;
-		states.push({ root,0 });
+		int nodes = 0;
+		bool isDepthLimited = limit != -1;
+		std::stack<Node> fringe;
+		fringe.push({ root,0 });
 
-		if (limit > 0 || limit == -1) {
-			while (!states.empty()) {
-				Node currentState = states.top();
-				states.pop();
-
-				for (const Move& move : currentState.grid.GetMovesShuffled()) {
-					Node node = currentState;
-					node.depth++;
-					if (node.grid.MoveAgent(move).IsInGoalState()) {
-						std::cout << node.depth << std::endl;
-						return true;
-					}
-					if (node.depth < limit || limit == -1) {
-						states.push(std::move(node));
-					}
-				}
-
+		while (!fringe.empty()) {
+			Node top = fringe.top();
+			BlockGrid& grid = top.grid;
+			if (grid.IsInGoalState()) {
+				PrintDetails(top,root,nodes,fringe.size());
+				return true;
 			}
+			fringe.pop();
+			nodes++;
+
+			if (top.depth < limit || !isDepthLimited) {
+
+				std::vector<Move> moves = randomMoves ? grid.GetMovesShuffled() : grid.GetMoves();
+
+				for (const Move& move : moves) {
+					fringe.push({ top,move });
+				}
+			}
+
 		}
 		return false;
 	}
-
-	class Node {
-
-	public:
-		Node(BlockGrid grid, int depth) :
-			grid(grid),
-			depth(depth) {}
-
-		BlockGrid grid;
-		int depth;
-	};
 };

@@ -1,6 +1,8 @@
 #pragma once
 #include "BlockGrid.h"
+#include "TreeSearch.h"
 #include <deque>
+#include <memory>
 
 class BFS {
 
@@ -9,21 +11,28 @@ public:
 
 		if (root.IsInGoalState()) return true;
 
-		std::deque<BlockGrid> states;
-		states.push_back(root);
+		std::deque<Node> fringe;
+		fringe.push_back({ root,0 });
 
-		while (!states.empty()) {
-			BlockGrid& currentState = states.front();
-			
-			for (const Move& move : currentState.GetMoves()) {
-				BlockGrid grid = currentState;
-				if (grid.MoveAgent(move).IsInGoalState()) {
-					return true;
-				}
-				states.push_back(std::move(grid));
+		int nodes = 0;
+
+		while (!fringe.empty()) {
+			const Node& front = fringe.front();
+			if (front.grid.IsInGoalState()) {
+				PrintDetails(front, root, nodes, fringe.size());
+				return true;
 			}
-			states.pop_front();
+
+			std::vector<Move> moves = front.grid.GetMoves();
+
+			for (const Move& move : moves) {
+				fringe.push_back({ front,move });
+			}
+
+			fringe.pop_front();
+			nodes++;
 		}
 		return false;
 	}
+	
 };

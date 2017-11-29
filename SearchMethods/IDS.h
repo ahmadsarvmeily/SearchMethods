@@ -8,7 +8,7 @@ public:
 	static bool Search(const BlockGrid& root) {
 
 		for (int i = 0; true; i++) {
-			if (DFS::Search(root, i))
+			if (DFS::Search(root, false, i))
 				return true;
 		}
 	}
